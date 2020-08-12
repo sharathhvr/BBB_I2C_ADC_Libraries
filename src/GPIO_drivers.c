@@ -69,3 +69,36 @@ int gpio_write_value(uint32_t gpio_num, uint8_t out_value)
     close(fd);
     return 0;
 }
+
+int gpio_read_value(uint32_t gpio_num)
+{
+    int fd;
+    char buf[100];
+
+    char read_value[1];
+
+    memset(read_value,'\0', sizeof(read_value));
+
+    snprintf(buf, sizeof(buf), SYS_GPIO_PATH "/gpio%d/value", gpio_num);
+
+    fd = open(buf, O_RDONLY);
+    if (fd < 0) {
+        perror("gpio read value\n");
+        return fd;
+    }
+
+    read(fd,read_value,sizeof(read_value));
+
+    if (read_value[0]=='1')
+    {
+    	close(fd);
+        return 1;
+    }
+    else if(read_value[0]=='0')
+    {
+    	close(fd);
+    	return 0;
+    }
+    close(fd);
+    return -1;
+}
